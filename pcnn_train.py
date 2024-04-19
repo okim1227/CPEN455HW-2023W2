@@ -36,7 +36,7 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
 
         # Pass both inputs and labels to the model; this assumes your model's forward method is defined as
         # forward(self, x, labels, sample=False)
-        model_output = model(model_input, labels)
+        model_output = model(model_input, category_name)
 
         loss = loss_op(model_input, model_output)
         loss_tracker.update(loss.item()/deno)

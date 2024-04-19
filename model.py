@@ -16,7 +16,7 @@ class PixelCNNLayer_up(nn.Module):
                                         resnet_nonlinearity, skip_connection=1)
                                             for _ in range(nr_resnet)])
 
-    def forward(self, u, ul):
+    def forward(self, u, ul):        
         u_list, ul_list = [], []
 
         for i in range(self.nr_resnet):
@@ -42,6 +42,7 @@ class PixelCNNLayer_down(nn.Module):
                                         resnet_nonlinearity, skip_connection=2)
                                             for _ in range(nr_resnet)])
 
+
     def forward(self, u, ul, u_list, ul_list):
         for i in range(self.nr_resnet):
             u  = self.u_stream[i](u, a=u_list.pop())
@@ -52,7 +53,7 @@ class PixelCNNLayer_down(nn.Module):
 
 class PixelCNN(nn.Module):
     def __init__(self, nr_resnet=5, nr_filters=80, nr_logistic_mix=10,
-                    resnet_nonlinearity='concat_elu', input_channels=3):
+                    resnet_nonlinearity='concat_elu', input_channels=3, num_class=4):
         super(PixelCNN, self).__init__()
         if resnet_nonlinearity == 'concat_elu' :
             self.resnet_nonlinearity = lambda x : concat_elu(x)
@@ -96,8 +97,18 @@ class PixelCNN(nn.Module):
         self.nin_out = nin(nr_filters, num_mix * nr_logistic_mix)
         self.init_padding = None
 
+        # make class embeddings
+        self.class_embedding = nn.Embedding(num_class, input_channels)
 
-    def forward(self, x, sample=False):
+# added labels as a param in forward method
+# label embeddings are created then attached to the input
+    def forward(self, x, labels, sample=False):
+
+        label_embeddings = self.class_embedding(labels)
+        label_embeddings = label_embeddings.view(-1, self.input_channels, 1, 1)
+        label_embeddings = label_embeddings.expand(-1, -1, x.size(2), x.size(3))
+        x += label_embeddings
+
         # similar as done in the tf repo :
         if self.init_padding is not sample:
             xs = [int(y) for y in x.size()]

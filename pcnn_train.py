@@ -271,7 +271,7 @@ if __name__ == '__main__':
                 print("Dimension {:d} fails!".format(192))
                 
             # when fid_score is not None
-            if args.en_wandb and fid_score:
+            if args.en_wandb:
                 wandb.log({"samples": sample_result,
                             "FID": fid_score})
         

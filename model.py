@@ -154,7 +154,11 @@ class PixelCNN(nn.Module):
         assert len(u_list) == len(ul_list) == 0, pdb.set_trace()
 
         return x_out
-    
+
+    # function for classifying images with labels
+    def classifier(self, x, device):
+        return 
+
     
 class random_classifier(nn.Module):
     def __init__(self, NUM_CLASSES):

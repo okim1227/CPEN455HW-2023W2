@@ -49,16 +49,20 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
+
+            if args.en_wandb:
+                wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
+                wandb.log({mode + "-epoch": epoch})
             
         # else:
             # calculate loss during 'test'
 
 
-
             
-    if args.en_wandb:
-        wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
-        wandb.log({mode + "-epoch": epoch})
+    # if args.en_wandb:
+    #     wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
+    #     wandb.log({mode + "-epoch": epoch})
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

@@ -42,6 +42,8 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
             
             # pass both inputs and labels to the model as param
             model_output = model(model_input, categories)
+            loss = loss_op(model_input, model_output)
+            loss_tracker.update(loss.item()/deno)
 
             if mode == 'training':
                 optimizer.zero_grad()
@@ -49,9 +51,8 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
                 optimizer.step()
             
         # else:
-        #     # calculate loss during 'test'
-        #     loss = loss_op(model_input, model_output)
-        #     loss_tracker.update(loss.item()/deno)
+            # calculate loss during 'test'
+
 
 
             

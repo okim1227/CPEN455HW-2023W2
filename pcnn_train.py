@@ -32,7 +32,7 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
     for batch_idx, item in enumerate(tqdm(data_loader)):
         
         # fetch both model_input and category name from dataset item
-        model_input, category_name = item
+        model_input, category_names = item
         model_input = model_input.to(device)
                 
         # create new tensor "categories"

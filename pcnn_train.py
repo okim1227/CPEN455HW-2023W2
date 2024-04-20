@@ -29,6 +29,8 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
         # fetch both model_input and category name from dataset item
         model_input, category_name = item
         # model_input = model_input.to(device)
+
+        print(type(category_name))
         
         # Send both the inputs and labels to the same device as the model
         model_input = model_input.to(device)

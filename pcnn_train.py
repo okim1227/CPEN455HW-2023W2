@@ -45,7 +45,7 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
         
         # Send both the inputs and labels to the same device as the model
         model_input = model_input.to(device)
-        category_name = torch.tensor(category_name, device=device)
+        category_name = torch.tensor(category_name, dtype=torch.long, device=device)
         # Pass both inputs and labels to the model; this assumes your model's forward method is defined as
         # forward(self, x, labels, sample=False)
         model_output = model(model_input, category_name)

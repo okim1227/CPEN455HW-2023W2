@@ -33,35 +33,28 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
         
         # fetch both model_input and category name from dataset item
         model_input, category_name = item
-        # model_input = model_input.to(device)
-
-        # Convert category names from string to numeric ID using my_bidict
-        # This assumes category_name is a single string or a batch of strings
-        if isinstance(category_name, str):
-            category_id = my_bidict[category_name]  # Convert single string to ID
-        elif isinstance(category_name, (list, tuple)):
-            # Convert each string in a batch
-            category_id = [my_bidict[name] for name in category_name]
-        else:
-            # Handle unexpected types
-            raise ValueError(f"Unsupported type for category_name: {type(category_name)}")
-
-        
-        # Send both the inputs and labels to the same device as the model
         model_input = model_input.to(device)
-        category_name = torch.tensor(category_name, dtype=torch.long, device=device)
-        # Pass both inputs and labels to the model; this assumes your model's forward method is defined as
-        # forward(self, x, labels, sample=False)
-        model_output = model(model_input, category_name)
+                
+        # create new tensor "categories"
+        if mode == 'training' or mode == 'val':
+            # convert category_name from tuple to a torch tensor
+            categories = torch.tensor([my_bidict[cat] for cat in category_names], dtype=torch.int64).to(device)
+            
+            # Pass both inputs and labels to the model; this assumes your model's forward method is defined as
+            # forward(self, x, labels, sample=False)
+            model_output = model(model_input, categories)
 
-        loss = loss_op(model_input, model_output)
-        loss_tracker.update(loss.item()/deno)
+            loss = loss_op(model_input, model_output)
+            loss_tracker.update(loss.item()/deno)
 
-        if mode == 'training':
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-        
+            if mode == 'training':
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+            
+            # else:
+
+            
     if args.en_wandb:
         wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
         wandb.log({mode + "-epoch": epoch})

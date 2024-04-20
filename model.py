@@ -98,14 +98,14 @@ class PixelCNN(nn.Module):
         self.init_padding = None
 
         # make class embeddings
-        self.class_embedding = nn.Embedding(num_class, input_channels)
+        self.class_embedding = nn.Embedding(num_class, input_channels*32*32)
 
 # added labels as a param in forward method
 # label embeddings are created then attached to the input
     def forward(self, x, labels, sample=False):
 
         label_embeddings = self.class_embedding(labels)
-        label_embeddings = label_embeddings.view(-1, self.input_channels, 1, 1)
+        label_embeddings = label_embeddings.view(-1, self.input_channels, 32, 32)
         label_embeddings = label_embeddings.expand(-1, -1, x.size(2), x.size(3))
         x += label_embeddings
 

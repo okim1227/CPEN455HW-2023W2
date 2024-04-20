@@ -39,8 +39,12 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
         # This assumes category_name is a single string or a batch of strings
         if isinstance(category_name, str):
             category_id = my_bidict[category_name]  # Convert single string to ID
+        elif isinstance(category_name, (list, tuple)):
+            # Convert each string in a batch
+            category_id = [my_bidict[name] for name in category_name]
         else:
-            category_id = [my_bidict[name] for name in category_name]  # Convert each string in a batch
+            # Handle unexpected types
+            raise ValueError(f"Unsupported type for category_name: {type(category_name)}")
 
         
         # Send both the inputs and labels to the same device as the model

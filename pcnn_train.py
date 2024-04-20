@@ -44,15 +44,16 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
             # forward(self, x, labels, sample=False)
             model_output = model(model_input, categories)
 
-            loss = loss_op(model_input, model_output)
-            loss_tracker.update(loss.item()/deno)
-
             if mode == 'training':
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
             
-            # else:
+        else:
+            # calculate loss during 'test'
+            loss = loss_op(model_input, model_output)
+            loss_tracker.update(loss.item()/deno)
+
 
             
     if args.en_wandb:

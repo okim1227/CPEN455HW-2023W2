@@ -22,6 +22,11 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
         
     deno =  args.batch_size * np.prod(args.obs) * np.log(2.)        
     loss_tracker = mean_tracker()
+
+    my_bidict = bidict({'Class0': 0, 
+                    'Class1': 1,
+                    'Class2': 2,
+                    'Class3': 3})
     
     # change from item to (model_input, labels) to iterate with labels 
     for batch_idx, item in enumerate(tqdm(data_loader)):
@@ -30,12 +35,17 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
         model_input, category_name = item
         # model_input = model_input.to(device)
 
-        print(type(category_name))
+        # Convert category names from string to numeric ID using my_bidict
+        # This assumes category_name is a single string or a batch of strings
+        if isinstance(category_name, str):
+            category_id = my_bidict[category_name]  # Convert single string to ID
+        else:
+            category_id = [my_bidict[name] for name in category_name]  # Convert each string in a batch
+
         
         # Send both the inputs and labels to the same device as the model
         model_input = model_input.to(device)
-        category_name = torch.tensor(category_name).to(device)
-
+        category_name = torch.tensor(category_name, device=device)
         # Pass both inputs and labels to the model; this assumes your model's forward method is defined as
         # forward(self, x, labels, sample=False)
         model_output = model(model_input, category_name)

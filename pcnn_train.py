@@ -40,8 +40,7 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
             # convert category_name from tuple to a torch tensor
             categories = torch.tensor([my_bidict[cat] for cat in category_names], dtype=torch.int64).to(device)
             
-            # Pass both inputs and labels to the model; this assumes your model's forward method is defined as
-            # forward(self, x, labels, sample=False)
+            # pass both inputs and labels to the model as param
             model_output = model(model_input, categories)
 
             if mode == 'training':
@@ -49,10 +48,10 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
                 loss.backward()
                 optimizer.step()
             
-        else:
-            # calculate loss during 'test'
-            loss = loss_op(model_input, model_output)
-            loss_tracker.update(loss.item()/deno)
+        # else:
+        #     # calculate loss during 'test'
+        #     loss = loss_op(model_input, model_output)
+        #     loss_tracker.update(loss.item()/deno)
 
 
             

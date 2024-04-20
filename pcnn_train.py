@@ -261,13 +261,17 @@ if __name__ == '__main__':
             gen_data_dir = args.sample_dir
             ref_data_dir = args.data_dir +'/test'
             paths = [gen_data_dir, ref_data_dir]
+
+            # set fid_score to default value for now
+            fid_score = None
             try:
                 fid_score = calculate_fid_given_paths(paths, 32, device, dims=192)
                 print("Dimension {:d} works! fid score: {}".format(192, fid_score))
             except:
                 print("Dimension {:d} fails!".format(192))
                 
-            if args.en_wandb:
+            # when fid_score is not None
+            if args.en_wandb and fid_score:
                 wandb.log({"samples": sample_result,
                             "FID": fid_score})
         

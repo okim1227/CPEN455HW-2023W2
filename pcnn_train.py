@@ -50,6 +50,7 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
                 loss.backward()
                 optimizer.step()
 
+            # loss_tracker is only updated inside training or val 
             if args.en_wandb:
                 wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
                 wandb.log({mode + "-epoch": epoch})
@@ -246,7 +247,13 @@ if __name__ == '__main__':
         
         if epoch % args.sampling_interval == 0:
             print('......sampling......')
-            sample_t = sample(model, args.sample_batch_size, args.obs, sample_op)
+
+            # generate random labels to feed into samples
+            rand_labels = torch.randint(low=0, high=len(my_bidict), size=(args.sample_batch_size,)).to(device=next(model.parameters()).device)
+            
+            # added labels tensor as param
+            sample_t = sample(model, args.sample_batch_size, args.obs, sample_op, rand_labels)
+            
             sample_t = rescaling_inv(sample_t)
             save_images(sample_t, args.sample_dir)
             sample_result = wandb.Image(sample_t, caption="epoch {}".format(epoch))

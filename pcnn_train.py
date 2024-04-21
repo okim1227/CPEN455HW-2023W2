@@ -262,8 +262,8 @@ if __name__ == '__main__':
             ref_data_dir = args.data_dir +'/test'
             paths = [gen_data_dir, ref_data_dir]
 
-            # set fid_score to default value for now
-            fid_score = None
+            # # set fid_score to default value for now
+            # fid_score = None
             try:
                 fid_score = calculate_fid_given_paths(paths, 32, device, dims=192)
                 print("Dimension {:d} works! fid score: {}".format(192, fid_score))

@@ -249,10 +249,19 @@ if __name__ == '__main__':
             print('......sampling......')
 
             # generate random labels to feed into samples
-            rand_labels = torch.randint(low=0, high=len(my_bidict), size=(args.sample_batch_size,)).to(device=next(model.parameters()).device)
+            # rand_labels = torch.randint(low=0, high=len(my_bidict), size=(args.sample_batch_size,)).to(device=next(model.parameters()).device)
             
+            # generate ordered labels for each class section
+            section_size = args.sample_batch_size // 4
+            ordered_labels = torch.cat([
+                torch.full((section_size,), 0, dtype=torch.long), 
+                torch.full((section_size,), 1, dtype=torch.long), 
+                torch.full((section_size,), 2, dtype=torch.long),  
+                torch.full((section_size,), 3, dtype=torch.long)   
+            ])
+
             # added labels tensor as param
-            sample_t = sample(model, args.sample_batch_size, args.obs, sample_op, rand_labels)
+            sample_t = sample(model, args.sample_batch_size, args.obs, sample_op, ordered_labels)
             
             sample_t = rescaling_inv(sample_t)
             save_images(sample_t, args.sample_dir)
@@ -262,15 +271,12 @@ if __name__ == '__main__':
             ref_data_dir = args.data_dir +'/test'
             paths = [gen_data_dir, ref_data_dir]
 
-            # # set fid_score to default value for now
-            # fid_score = None
             try:
                 fid_score = calculate_fid_given_paths(paths, 32, device, dims=192)
                 print("Dimension {:d} works! fid score: {}".format(192, fid_score))
             except:
                 print("Dimension {:d} fails!".format(192))
                 
-            # when fid_score is not None
             if args.en_wandb:
                 wandb.log({"samples": sample_result,
                             "FID": fid_score})

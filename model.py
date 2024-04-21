@@ -106,7 +106,7 @@ class PixelCNN(nn.Module):
 
         label_embeddings = self.class_embedding(labels)
         label_embeddings = label_embeddings.view(-1, self.input_channels, 32, 32)
-        label_embeddings = label_embeddings.expand(-1, -1, x.size(2), x.size(3))
+        # label_embeddings = label_embeddings.expand(-1, -1, x.size(2), x.size(3))
         x += label_embeddings
 
         # similar as done in the tf repo :

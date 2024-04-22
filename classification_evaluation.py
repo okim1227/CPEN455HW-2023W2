@@ -30,7 +30,7 @@ def classify(model, model_input, device):
     # class label is repeated to match a batch of data; for parallel processing
     # eg.) when batch_size=3, num_classes=4
     # shape: ([0, 0, 0, 1, 1, 1, 2, 2, 2])
-    batched_labels = torch.arange(self.num_classes).repeat_interleave(batch_size)
+    batched_labels = torch.arange(NUM_CLASSES).repeat_interleave(batch_size)
     
     # generate output for each class label
     model_out = model(model_input, batched_labels)

@@ -155,10 +155,6 @@ class PixelCNN(nn.Module):
 
         return x_out
 
-    # function for classifying images with labels
-    def classifier(self, x, device):
-        return 
-
     
 class random_classifier(nn.Module):
     def __init__(self, NUM_CLASSES):

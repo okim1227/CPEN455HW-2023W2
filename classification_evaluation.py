@@ -18,9 +18,35 @@ NUM_CLASSES = len(my_bidict)
 # Write your code here
 # And get the predicted label, which is a tensor of shape (batch_size,)
 # Begin of your code
+
+# classification function to convert the output of conditional PixelCNN++ to the prediction labels when given a new image
+def classify(model, model_input, device):
+    batch_size = x.shape[0]
+
+    # replicate input for number of classes
+    model_input = model_input.repeat(NUM_CLASSES,1,1,1)
+
+    # lookup tensor of potential class labels that can be guessed for each image in the batch
+    # class label is repeated to match a batch of data; for parallel processing
+    # eg.) when batch_size=3, num_classes=4
+    # shape: ([0, 0, 0, 1, 1, 1, 2, 2, 2])
+    batched_labels = torch.arange(self.num_classes).repeat_interleave(batch_size)
+    
+    # generate output for each class label
+    model_out = model(model_input, batched_labels)
+
+    # choice of loss function was given from piazza/ TA office hours
+    logits = discretized_mix_logistic_loss(model_input, model_out, sum_over_batch=False).view(NUM_CLASSES, batch_size).permute(1, 0)
+    
+    # minimize logistic loss
+    losses, pred_labels = torch.min(logits, dim=1)
+
+    return logits, losses, pred_labels
+
 def get_label(model, model_input, device):
-    answer = model(model_input, device)
-    return answer
+    # changed to predicted
+    logits, losses, pred_labels = classify(model, model_input, device)
+    return pred_labels
 # End of your code
 
 def classifier(model, data_loader, device):
@@ -64,7 +90,11 @@ if __name__ == '__main__':
     #Write your code here
     #You should replace the random classifier with your trained model
     #Begin of your code
-    model = random_classifier(NUM_CLASSES)
+
+    # matched hyperparams with run.sh file
+    model = PixelCNN(self, nr_resnet=1, nr_filters=40, nr_logistic_mix=5,
+                    input_channels=3, num_class=NUM_CLASSES)
+
     #End of your code
     
     model = model.to(device)

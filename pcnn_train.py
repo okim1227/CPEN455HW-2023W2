@@ -50,19 +50,19 @@ def train_or_test(model, data_loader, optimizer, loss_op, device, args, epoch, m
                 loss.backward()
                 optimizer.step()
 
-            # loss_tracker is only updated inside training or val 
-            if args.en_wandb:
-                wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
-                wandb.log({mode + "-epoch": epoch})
+            # # loss_tracker is only updated inside training or val 
+            # if args.en_wandb:
+            #     wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
+            #     wandb.log({mode + "-epoch": epoch})
             
-        # else:
+        else:
             # calculate loss during 'test'
+            logits, losses, pred_labels = classify(model, model_input, device)
+            loss_tracker.update(torch.sum(losses).item()/deno)
 
-
-            
-    # if args.en_wandb:
-    #     wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
-    #     wandb.log({mode + "-epoch": epoch})
+        if args.en_wandb:
+            wandb.log({mode + "-Average-BPD" : loss_tracker.get_mean()})
+            wandb.log({mode + "-epoch": epoch})
 
 
 if __name__ == '__main__':

@@ -92,7 +92,7 @@ if __name__ == '__main__':
     #Begin of your code
 
     # matched hyperparams with run.sh file
-    model = PixelCNN(self, nr_resnet=1, nr_filters=40, nr_logistic_mix=5,
+    model = PixelCNN(nr_resnet=1, nr_filters=40, nr_logistic_mix=5,
                     input_channels=3, num_class=NUM_CLASSES)
 
     #End of your code

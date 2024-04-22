@@ -21,7 +21,7 @@ NUM_CLASSES = len(my_bidict)
 
 # classification function to convert the output of conditional PixelCNN++ to the prediction labels when given a new image
 def classify(model, model_input, device):
-    batch_size = x.shape[0]
+    batch_size = model_input.shape[0]
 
     # replicate input for number of classes
     model_input = model_input.repeat(NUM_CLASSES,1,1,1)
